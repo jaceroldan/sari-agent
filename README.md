@@ -3,6 +3,8 @@
 
 Sari-sari Sandbox 0.1
 
+To control agent through terminal:
+
 1. Open the folder containing ClientSide.py in terminal
 2. Open Python Shell and import ClientSide
 3. Open bin/sss.exe
