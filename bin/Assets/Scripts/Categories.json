@@ -1,0 +1,24 @@
+{
+    "Categories": [
+        {
+            "Category": "Cereal",
+            "Items": [
+                "Grocery_CocoCrunch"
+            ]
+        },
+        {
+            "Category": "Biscuit",
+            "Items": [
+                "Grocery_Danisa",
+                "Grocery_Wafer"
+            ]
+        },
+        {
+            "Category": "Bread",
+            "Items": [
+                "Grocery_Mamon",
+                "Grocery_JollyTime"
+            ]
+        }
+    ]
+}
