@@ -24,7 +24,6 @@ Functions:
 	
 	TransformAgent((translateX, translateY, translateZ), (degreesX, degreesY, degreesZ)):
 		Transforms the agent by the specified translation and rotation with respect to the camera transform.
-  		e.g. TransformAgent((
 	
 	TransformHands((leftTranslateX, leftTranslateY, leftTranslateZ), (leftDegreesX, leftDegreesY, leftDegreesZ), (rightTranslateX, rightTranslateY, rightTranslateZ), (rightDegreesX, rightDegreesY, rightDegreesZ)):
 		Transforms the agent hands by the specified translation and rotation with respect to their corresponding transforms.
