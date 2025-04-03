@@ -1,3 +1,4 @@
+import os
 import asyncio
 import websockets
 import json
@@ -7,9 +8,21 @@ async def SendCommand(command, uri):
         await websocket.send(json.dumps(command))
         if command["command"] == "RequestScreenshot":
             imageBytes = await websocket.recv()
-            with open("ClientScreenshot.png", "wb") as file:
+
+            folder_name = os.path.join("screenshots", command["folder_name"])
+            prefix = str(command["prefix"]) + "-" if str(command["prefix"]) else ""
+            suffix = "-" + str(command["suffix"]) if str(command["suffix"]) else ""
+            file_name = f"{prefix}ClientScreenshot{suffix}.png"
+
+            if folder_name:
+                os.makedirs(folder_name, exist_ok=True)  # Creates the folder if it doesn't exist
+
+            # Save the image file in the specified folder
+            file_path = os.path.join(folder_name, file_name) if folder_name else file_name
+
+            with open(file_path, "wb") as file:
                 file.write(imageBytes)
-            print("Screenshot received and saved as ClientScreenshot.png")
+            print(f"Screenshot received and saved as {file_name}")
         else:
             response = await websocket.recv()
             print(response)
@@ -52,9 +65,12 @@ def ToggleRightGrip(uri="ws://localhost:8080/commands"):
     }, uri))
     print("Client Side: Toggle Right Grip")
 
-def RequestScreenshot(uri="ws://localhost:8080/commands"):
+def RequestScreenshot(prefix="", suffix="", folder_name="", uri="ws://localhost:8080/commands"):
     asyncio.get_event_loop().run_until_complete(SendCommand(
         {
-        "command": "RequestScreenshot"
+        "command": "RequestScreenshot",
+        "prefix": prefix,
+        "suffix": suffix,
+        "folder_name": folder_name
     }, uri))
     print("Client Side: Screenshot requested.")
