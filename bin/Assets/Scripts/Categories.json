@@ -3,21 +3,22 @@
         {
             "Category": "Cereal",
             "Items": [
-                "Grocery_CocoCrunch"
+                "NESTLE_KOKOKRUNCH_CHOCOLATE_330G"
             ]
         },
         {
             "Category": "Biscuit",
             "Items": [
-                "Grocery_Danisa",
-                "Grocery_Wafer"
+                "DSFAPS_DANISA_BUTTERCOOKIES_454G",
+                "BISSIN_BLACKCURRANTWAFERS_PREMIUM_100G"
             ]
         },
         {
             "Category": "Bread",
             "Items": [
-                "Grocery_Mamon",
-                "Grocery_JollyTime"
+            "LEMONSQUARE_MAMON_CHEESY_264G",
+            "JOLLYTIME_BUTTERLICIOUS_ORIGINALBUTTER_298G",
+            "HOUSEOFPOLVORON_SOFTCOOKIES_WITHSTEVIA_18PCS"
             ]
         }
     ]

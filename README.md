@@ -1,9 +1,16 @@
 # sari-sari-sandbox
 ! FOR ALPHA TESTING !
 
-Sari-sari Sandbox 0.1
+Sari-sari Sandbox 0.2
 
-To control agent through terminal:
+# Updates
+1. Forward movement is now dependent on the XR rig forward vector instead of the camera's forward vector to prevent flying when camera is rotated about x and z axes
+2. Y translation restricted to [0, 2] unity units
+3. Added hand physics so they do not pass through objects.
+4. If no VR controller detected (API mode,) VR hands are lowered by 0.5
+5. Added Reset() function in ClientSide API
+
+# To control agent through terminal:
 
 1. Open the folder containing ClientSide.py in terminal
 2. Open Python Shell and import ClientSide
@@ -36,3 +43,9 @@ Functions:
 	
 	RequestScreenshot():
 		Requests a screenshot and saves the received image as "ClientScreenshot.png" in the same directory as this module.
+
+  	RequestData():
+   		Requests a plain screenshot, screenshot with bounding boxes, and bounding box coordinates.
+
+	Reset():
+		Resets the environment to its initial state with randomized grocery product placement.

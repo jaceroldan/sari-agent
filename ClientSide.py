@@ -6,7 +6,7 @@ import json
 async def SendCommand(command, uri):
     async with websockets.connect(uri, max_size=None) as websocket:
         await websocket.send(json.dumps(command))
-        if command["command"] == "RequestScreenshot":
+        if command["command"] == "RequestScreenshot" or command["command"] == "RequestAnnotation":
             imageBytes = await websocket.recv()
 
             folder_name = os.path.join("screenshots", command["folder_name"])
@@ -72,5 +72,31 @@ def RequestScreenshot(prefix="", suffix="", folder_name="", uri="ws://localhost:
         "prefix": prefix,
         "suffix": suffix,
         "folder_name": folder_name
+    }, uri))
+    print("Client Side: Screenshot requested.")
+
+def RequestAnnotation(uri="ws://localhost:8080/commands"):
+    asyncio.get_event_loop().run_until_complete(SendCommand(
+        {
+        "command": "RequestAnnotation"
+    }, uri))
+    print("Client Side: Annotation requested.")
+
+def RequestJson(uri="ws://localhost:8080/commands"):
+    asyncio.get_event_loop().run_until_complete(SendCommand(
+        {
+        "command": "RequestJson"
+    }, uri))
+    print("Client Side: Json requested.")
+
+def RequestData():
+    RequestScreenshot()
+    RequestAnnotation()
+    RequestJson()
+
+def Reset(uri="ws://localhost:8080/commands"):
+    asyncio.get_event_loop().run_until_complete(SendCommand(
+        {
+        "command": "ResetEnvironment"
     }, uri))
     print("Client Side: Screenshot requested.")
