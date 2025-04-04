@@ -77,6 +77,7 @@ crashlytics-build.properties
 *ClientScreenshot*
 screenshots/
 venv/
+.env
 
 # pycache
 *.pyc
