@@ -12,9 +12,9 @@ from typing import (
 async def SendCommand(command: Dict[str, Any], uri: str):
     async with websockets.connect(uri, max_size=None) as websocket:
         await websocket.send(json.dumps(command))
-        if command["command"] == "RequestScreenshot":
+        if command["command"] == "RequestScreenshot" or command["command"] == "RequestAnnotation":
             image_bytes = await websocket.recv()
-            return image_bytes
+            return {'image': image_bytes}
         else:
             response = await websocket.recv()
             return response
@@ -81,23 +81,49 @@ def RequestScreenshot(uri: str="ws://localhost:8080/commands"):
     }, uri))
     return result
 
+def Reset(uri: str="ws://localhost:8080/commands"):
+    asyncio.get_event_loop().run_until_complete(SendCommand({
+        "command": "ResetEnvironment"
+    }, uri))
+
+def RequestAnnotation(uri: str="ws://localhost:8080/commands"):
+    result = asyncio.get_event_loop().run_until_complete(SendCommand(
+        {
+        "command": "RequestAnnotation"
+    }, uri))
+    return result
+
+def RequestJson(uri: str="ws://localhost:8080/commands"):
+    result = asyncio.get_event_loop().run_until_complete(SendCommand(
+        {
+        "command": "RequestJson"
+    }, uri))
+    return result
+
+def ResetHandsNoVR():
+    TransformHands((0, 0.025*16, 0), (0, 0, 0), (0, 0.025*16, 0), (0, 0, 0))
 
 # Controls
-_MOVE_FWD_ = lambda: TransformAgent((0, 0, 0.01), (0, 0, 0))
-_MOVE_BCK_ = lambda: TransformAgent((0, 0, -0.01), (0, 0, 0))
-_MOVE_LEFT_ = lambda: TransformAgent((-0.01, 0, 0), (0, 0, 0))
-_MOVE_RIGHT_ = lambda: TransformAgent((0.01, 0, 0), (0, 0, 0))
-_PAN_LEFT_ = lambda: TransformAgent((0, 0, 0), (0, -1, 0))
-_PAN_RIGHT_ = lambda: TransformAgent((0, 0, 0), (0, 1, 0))
-_PAN_UP_ = lambda: TransformAgent((0, 0, 0), (-1, 0, 0))
-_PAN_DOWN_ = lambda: TransformAgent((0, 0, 0), (1, 0, 0))
+_MOVE_FWD_ = lambda: TransformAgent((0, 0, 0.1), (0, 0, 0))
+_MOVE_BCK_ = lambda: TransformAgent((0, 0, -0.1), (0, 0, 0))
+_MOVE_LEFT_ = lambda: TransformAgent((-0.1, 0, 0), (0, 0, 0))
+_MOVE_RIGHT_ = lambda: TransformAgent((0.1, 0, 0), (0, 0, 0))
+_PAN_LEFT_ = lambda: TransformAgent((0, 0, 0), (0, -2.5, 0))
+_PAN_RIGHT_ = lambda: TransformAgent((0, 0, 0), (0, 2.5, 0))
+_PAN_UP_ = lambda: TransformAgent((0, 0, 0), (-2.5, 0, 0))
+_PAN_DOWN_ = lambda: TransformAgent((0, 0, 0), (2.5, 0, 0))
 _GRIP_LEFT_ = lambda: ToggleLeftGrip()
 _GRIP_RIGHT_ = lambda: ToggleRightGrip()
-_XTNFWD_LEFT_ = lambda: TransformHands((0, 0, 0.01), (0, 0, 0), (0, 0, 0), (0, 0, 0))
-_PLLBCK_LEFT_ = lambda: TransformHands((0, 0, -0.01), (0, 0, 0), (0, 0, 0), (0, 0, 0))
-_XTNFWD_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0.01), (0, 0, 0))
-_PLLBCK_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, -0.01), (0, 0, 0))
-_RSE_LEFT_ = lambda: TransformHands((0, 0.01, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
-_LWR_LEFT_ = lambda: TransformHands((0, -0.01, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
-_RSE_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0.01, 0), (0, 0, 0))
-_LWR_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, -0.01, 0), (0, 0, 0))
+_XTNFWD_LEFT_ = lambda: TransformHands((0, 0, 0.025), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_PLLBCK_LEFT_ = lambda: TransformHands((0, 0, -0.025), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_XTNFWD_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0.025), (0, 0, 0))
+_PLLBCK_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, -0.025), (0, 0, 0))
+_RSE_LEFT_ = lambda: TransformHands((0, 0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_LWR_LEFT_ = lambda: TransformHands((0, -0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_RSE_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0.025, 0), (0, 0, 0))
+_LWR_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, -0.025, 0), (0, 0, 0))
+_RESET_ = lambda: Reset()
+_RESET_HANDS_NO_VR_ = lambda: ResetHandsNoVR()
+_REQUEST_SCREENSHOT_ = lambda: RequestScreenshot()
+_REQUEST_ANNOTATION_ = lambda: RequestAnnotation()
+_REQUEST_JSON_ = lambda: RequestJson()
