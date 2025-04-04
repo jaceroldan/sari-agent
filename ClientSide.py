@@ -1,86 +1,103 @@
+import os
 import asyncio
 import websockets
 import json
+import re
+from typing import (
+    Tuple,
+    Dict,
+    Any
+)
 
-async def SendCommand(command, uri):
+async def SendCommand(command: Dict[str, Any], uri: str):
     async with websockets.connect(uri, max_size=None) as websocket:
         await websocket.send(json.dumps(command))
-        if command["command"] == "RequestScreenshot" or command["command"] == "RequestAnnotation":
-            imageBytes = await websocket.recv()
-            with open(command["command"]+"ClientScreenshot.png", "wb") as file:
-                file.write(imageBytes)
-            print("Screenshot received and saved as ClientScreenshot.png")
+        if command["command"] == "RequestScreenshot":
+            image_bytes = await websocket.recv()
+            return image_bytes
         else:
             response = await websocket.recv()
-            print(response)
+            return response
 
-async def FetchData(uri):
-    async with websockets.connect(uri, max_size=None) as websocket:
-        response = await websocket.recv()
-        return response
-
-def TransformAgent(translation, rotation, uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand({
+def TransformAgent(translation: Tuple[float],
+                   rotation: Tuple[float],
+                   uri: str = "ws://localhost:8080/commands") -> Dict[str, Tuple[float]]:
+    result = asyncio.get_event_loop().run_until_complete(SendCommand({
         "command": "TransformAgent",
         "translation": translation,
         "rotation": rotation
     }, uri))
-    print("Client Side: Agent moved by", translation, rotation)
 
-def TransformHands(leftTranslation, leftRotation, rightTranslation, rightRotation, uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
+    extracted_state = re.findall(r'\((.*?)\)', result, re.DOTALL)
+    assert len(extracted_state) == 2, "Expected 2 Tuple[float], got " + str(len(extracted_state))
+    agent_state = {
+        'translation': tuple(map(float, extracted_state[0].split(', '))),
+        'rotation': tuple(map(float, extracted_state[1].split(', ')))
+    }
+    return agent_state
+
+def TransformHands(leftTranslation: Tuple[float],
+                   leftRotation: Tuple[float],
+                   rightTranslation: Tuple[float],
+                   rightRotation: Tuple[float],
+                   uri: str = "ws://localhost:8080/commands"):
+    result = asyncio.get_event_loop().run_until_complete(SendCommand({
         "command": "TransformHands",
         "leftTranslation": leftTranslation,
         "leftRotation": leftRotation,
         "rightTranslation": rightTranslation,
         "rightRotation": rightRotation
     }, uri))
-    print("Client Side: Hands transformed")
+    
+    extracted_state = re.findall(r'\((.*?)\)', result, re.DOTALL)
+    assert len(extracted_state) == 4, "Expected 4 Tuple[float], got " + str(len(extracted_state))
+    current_state = {
+        'leftTranslation': tuple(map(float, extracted_state[0].split(', '))),
+        'leftRotation': tuple(map(float, extracted_state[1].split(', '))),
+        'rightTranslation': tuple(map(float, extracted_state[2].split(', '))),
+        'rightRotation': tuple(map(float, extracted_state[3].split(', ')))
+    }
+    return current_state
 
-def ToggleLeftGrip(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
+def ToggleLeftGrip(uri: str="ws://localhost:8080/commands"):
+    result = asyncio.get_event_loop().run_until_complete(SendCommand({
         "command": "ToggleLeftGrip"
     }, uri))
-    print("Client Side: Toggle Left Grip")
+
+    if "True" in result:    return True
+    return False
 
 def ToggleRightGrip(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
+    result = asyncio.get_event_loop().run_until_complete(SendCommand({
         "command": "ToggleRightGrip"
     }, uri))
-    print("Client Side: Toggle Right Grip")
 
-def RequestScreenshot(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
-        "command": "RequestScreenshot"
+    if "True" in result:    return True
+    return False
+
+def RequestScreenshot(uri: str="ws://localhost:8080/commands"):
+    result = asyncio.get_event_loop().run_until_complete(SendCommand({
+        "command": "RequestScreenshot",
     }, uri))
-    print("Client Side: Screenshot requested.")
+    return result
 
-def RequestAnnotation(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
-        "command": "RequestAnnotation"
-    }, uri))
-    print("Client Side: Annotation requested.")
 
-def RequestJson(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
-        "command": "RequestJson"
-    }, uri))
-    print("Client Side: Json requested.")
-
-def RequestData():
-    RequestScreenshot()
-    RequestAnnotation()
-    RequestJson()
-
-def Reset(uri="ws://localhost:8080/commands"):
-    asyncio.get_event_loop().run_until_complete(SendCommand(
-        {
-        "command": "ResetEnvironment"
-    }, uri))
-    print("Client Side: Screenshot requested.")
+# Controls
+_MOVE_FWD_ = lambda: TransformAgent((0, 0, 0.01), (0, 0, 0))
+_MOVE_BCK_ = lambda: TransformAgent((0, 0, -0.01), (0, 0, 0))
+_MOVE_LEFT_ = lambda: TransformAgent((-0.01, 0, 0), (0, 0, 0))
+_MOVE_RIGHT_ = lambda: TransformAgent((0.01, 0, 0), (0, 0, 0))
+_PAN_LEFT_ = lambda: TransformAgent((0, 0, 0), (0, -1, 0))
+_PAN_RIGHT_ = lambda: TransformAgent((0, 0, 0), (0, 1, 0))
+_PAN_UP_ = lambda: TransformAgent((0, 0, 0), (-1, 0, 0))
+_PAN_DOWN_ = lambda: TransformAgent((0, 0, 0), (1, 0, 0))
+_GRIP_LEFT_ = lambda: ToggleLeftGrip()
+_GRIP_RIGHT_ = lambda: ToggleRightGrip()
+_XTNFWD_LEFT_ = lambda: TransformHands((0, 0, 0.01), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_PLLBCK_LEFT_ = lambda: TransformHands((0, 0, -0.01), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_XTNFWD_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0.01), (0, 0, 0))
+_PLLBCK_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, -0.01), (0, 0, 0))
+_RSE_LEFT_ = lambda: TransformHands((0, 0.01, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_LWR_LEFT_ = lambda: TransformHands((0, -0.01, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+_RSE_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0.01, 0), (0, 0, 0))
+_LWR_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, -0.01, 0), (0, 0, 0))
