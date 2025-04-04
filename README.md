@@ -1,9 +1,15 @@
 # sari-sari-sandbox
 ! FOR ALPHA TESTING !
 
-Sari-sari Sandbox 0.2
+Sari-sari Sandbox 0.2.1
 
 # Updates
+0.2.1
+1. Fixed bug: right hand not gripping properly
+2. Fixed bug: decal projector not showing the expiration date
+3. VR hands are lowered by 0.1 instead of 0.5
+
+0.2
 1. Forward movement is now dependent on the XR rig forward vector instead of the camera's forward vector to prevent flying when camera is rotated about x and z axes
 2. Y translation restricted to [0, 2] unity units
 3. Added hand physics so they do not pass through objects.
