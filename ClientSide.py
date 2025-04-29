@@ -140,8 +140,49 @@ _RSE_LEFT_ = lambda: TransformHands((0, 0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 
 _LWR_LEFT_ = lambda: TransformHands((0, -0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
 _RSE_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0.025, 0), (0, 0, 0))
 _LWR_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, -0.025, 0), (0, 0, 0))
+_ROT_RIGHT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 15, 0), (0, 0, 0), (0, 0, 0))
+_ROT_RIGHT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, -15, 0), (0, 0, 0), (0, 0, 0))
+_ROT_LEFT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 15, 0))
+_ROT_LEFT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, -15, 0))
 _RESET_ = lambda: Reset()
 _RESET_HANDS_NO_VR_ = lambda: ResetHandsNoVR()
 _REQUEST_SCREENSHOT_ = lambda: RequestScreenshot()
 _REQUEST_ANNOTATION_ = lambda: RequestAnnotation()
 _REQUEST_JSON_ = lambda: RequestJson()
+
+__all__ = [
+    "TransformAgent",
+    "TransformHands",
+    "ToggleLeftGrip",
+    "ToggleRightGrip",
+    "RequestScreenshot",
+    "RequestAnnotation",
+    "RequestJson",
+    "_MOVE_FWD_",
+    "_MOVE_BCK_",
+    "_MOVE_LEFT_",
+    "_MOVE_RIGHT_",
+    "_PAN_LEFT_",
+    "_PAN_RIGHT_",
+    "_PAN_UP_",
+    "_PAN_DOWN_",
+    "_GRIP_LEFT_",
+    "_GRIP_RIGHT_",
+    "_XTNFWD_LEFT_",
+    "_PLLBCK_LEFT_" ,
+    "_XTNFWD_RIGHT_",
+    "_PLLBCK_RIGHT_",
+    "_RSE_LEFT_",
+    "_LWR_LEFT_",
+    "_RSE_RIGHT_",
+    "_LWR_RIGHT_",
+    "_ROT_RIGHT_CLOCK_",
+    "_ROT_RIGHT_CTRCLOCK_",
+    "_ROT_LEFT_CLOCK_",
+    "_ROT_LEFT_CTRCLOCK_",
+    "_RESET_",
+    "_RESET_HANDS_NO_VR_",
+    "_REQUEST_SCREENSHOT_",
+    "_REQUEST_ANNOTATION_",
+    "_REQUEST_JSON_",
+]
