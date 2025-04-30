@@ -1,6 +1,9 @@
 from letta_client import Letta
 from letta_client.client import BaseTool
 
+from manipulation import reach_and_grasp, pull_back, raise_hand_to_eye_level
+from perception import rotate_and_read
+
 
 HUMAN_MEMORY = {
     "label": "human",
@@ -24,12 +27,20 @@ memory_blocks = [
 ]
 
 
-client = Letta(base_url="http://localhost:8283")
+# client = Letta(base_url="http://localhost:8283")
 
-openai_agent = client.agents.create(
-    name="sari-sari-agent",
-    model="openai/gpt-4o",
-    embedding="openai/text-embedding-3-small",
-    context_window_limit=16000,
-    memory_blocks=memory_blocks
-)
+# openai_agent = client.agents.create(
+#     name="sari-sari-agent",
+#     model="openai/gpt-4o",
+#     embedding="openai/text-embedding-3-small",
+#     context_window_limit=16000,
+#     memory_blocks=memory_blocks
+# )
+
+def access_grocery_item(hand="left", max_attempts=30):
+    accessed, attempts = reach_and_grasp(hand=hand, max_attempts=max_attempts)
+    if accessed:
+        pull_back(hand=hand, max_frames=attempts//2)
+        raise_hand_to_eye_level(hand=hand)
+        return rotate_and_read(hand="left")
+    return ["No object grabbed"]

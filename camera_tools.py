@@ -71,7 +71,7 @@ def center_until_close(prompt, image_capture_fn, server_url, tolerance=10, color
 
 
 
-def annotate_located_object(image: Image.Image, result: dict, color="red", radius=20):
+def annotate_located_object(image: Image.Image or str, result: dict, color="red", radius=20):
     """
     Draws a circle at the best patch center location based on CLIP locate result.
 
@@ -84,6 +84,9 @@ def annotate_located_object(image: Image.Image, result: dict, color="red", radiu
     Returns:
         PIL.Image: Annotated image.
     """
+    if type(image) == str:
+        image = Image.open(image)
+
     annotated_image = image.copy()
     draw = ImageDraw.Draw(annotated_image)
 
