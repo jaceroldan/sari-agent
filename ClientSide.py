@@ -140,15 +140,81 @@ _RSE_LEFT_ = lambda: TransformHands((0, 0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 
 _LWR_LEFT_ = lambda: TransformHands((0, -0.025, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
 _RSE_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0.025, 0), (0, 0, 0))
 _LWR_RIGHT_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, -0.025, 0), (0, 0, 0))
-_ROT_RIGHT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 15, 0), (0, 0, 0), (0, 0, 0))
-_ROT_RIGHT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, -15, 0), (0, 0, 0), (0, 0, 0))
-_ROT_LEFT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 15, 0))
-_ROT_LEFT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, -15, 0))
+_ROT_LEFT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 15, 0), (0, 0, 0), (0, 0, 0))
+_ROT_LEFT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, -15, 0), (0, 0, 0), (0, 0, 0))
+_ROT_RIGHT_CLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 15, 0))
+_ROT_RIGHT_CTRCLOCK_ = lambda: TransformHands((0, 0, 0), (0, 0, 0), (0, 0, 0), (0, -15, 0))
 _RESET_ = lambda: Reset()
 _RESET_HANDS_NO_VR_ = lambda: ResetHandsNoVR()
 _REQUEST_SCREENSHOT_ = lambda: RequestScreenshot()
 _REQUEST_ANNOTATION_ = lambda: RequestAnnotation()
 _REQUEST_JSON_ = lambda: RequestJson()
+
+# High-level actions
+def move_forward(units):
+    for _ in range(units):
+        _MOVE_FWD_()
+
+def move_backward(units):
+    for _ in range(units):
+        _MOVE_BACK_()
+
+def move_left(units):
+    for _ in range(units):
+        _MOVE_LEFT_()
+
+def move_right(units):
+    for _ in range(units):
+        _MOVE_RIGHT_()
+
+def pan_left(units):
+    for _ in range(units):
+        _PAN_LEFT_()
+
+def pan_right(units):
+    for _ in range(units):
+        _PAN_RIGHT_()
+
+def pan_up(units):
+    for _ in range(units):
+        _PAN_UP_()
+
+def pan_down(units):
+    for _ in range(units):
+        _PAN_DOWN_()
+
+def extend_left_hand_forward(units):
+    for _ in range(units):
+        _XTNFWD_LEFT_()
+
+def extend_right_hand_forward(units):
+    for _ in range(units):
+        _XTNFWD_RIGHT_()
+
+def pull_left_hand_backward(units):
+    for _ in range(units):
+        _PLLBCK_LEFT_()
+
+def pull_right_hand_backward(units):
+    for _ in range(units):
+        _PLLBCK_RIGHT_()
+
+def raise_left_hand(units):
+    for _ in range(units):
+        _RSE_LEFT_()
+
+def raise_right_hand(units):
+    for _ in range(units):
+        _RSE_RIGHT_()
+
+def lower_left_hand(units):
+    for _ in range(units):
+        _LWR_LEFT_()
+
+def lower_right_hand(units):
+    for _ in range(units):
+        _LWR_RIGHT_()
+
 
 __all__ = [
     "TransformAgent",
@@ -185,4 +251,20 @@ __all__ = [
     "_REQUEST_SCREENSHOT_",
     "_REQUEST_ANNOTATION_",
     "_REQUEST_JSON_",
+    "move_forward",
+    "move_backward",
+    "move_left",
+    "move_right",
+    "pan_left",
+    "pan_right",
+    "pan_up",
+    "pan_down",
+    "extend_left_hand_forward",
+    "extend_right_hand_forward",
+    "pull_left_hand_backward",
+    "pull_right_hand_backward",
+    "raise_left_hand",
+    "raise_right_hand",
+    "lower_left_hand",
+    "lower_right_hand",
 ]
