@@ -44,6 +44,7 @@ def pull_back(hand='left', max_frames=10):
 
 def rotate_and_read(hand="left", max_frames=10, retract_steps=5, text_read_fn=None):
     # Step 2: Rotate and OCR
+    texts = []
     rotate_fn = _ROT_LEFT_CLOCK_ if hand == 'left' else _ROT_RIGHT_CLOCK_
 
     for i in range(24):  # Full 360° sweep
@@ -62,3 +63,11 @@ def raise_hand_to_eye_level(hand="left", raise_steps=5):
         for i in range(raise_steps):
             _RSE_RIGHT_()
 
+
+def grab_and_read_item(hand="left", max_attempts=30):
+    accessed, attempts = reach_and_grasp(hand=hand, max_attempts=max_attempts)
+    if accessed:
+        pull_back(hand=hand, max_frames=attempts//2)
+        raise_hand_to_eye_level(hand=hand)
+        return rotate_and_read(hand="left")
+    return ["No object grabbed"]
