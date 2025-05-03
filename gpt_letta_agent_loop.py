@@ -42,6 +42,7 @@ from perception import center_object_on_screen
 from manipulation import grab_and_read_item, rotate_and_read
 from letta_client import Letta, CreateBlock, MessageCreate
 from requests.exceptions import RequestException
+from file_upload import upload_image
 
 # === Configuration ===
 BASE_URL = "http://202.92.159.242:8000"
@@ -54,6 +55,8 @@ client = Letta(base_url="http://localhost:8283")
 agent_state = client.agents.create(
     name="vpd_agent",
     memory_blocks=[
+        # CreateBlock(label="bounding_box", value="", limit=5000),
+        CreateBlock(label="distance", value="", limit=5000),
         CreateBlock(label="vision", value="", limit=5000),
         CreateBlock(label="plan", value="", limit=5000),
         CreateBlock(label="decision", value="", limit=5000),
@@ -119,7 +122,7 @@ ACTION_MAP = {
     "toggle_left_grip": _GRIP_LEFT_,
     "toggle_right_grip": _GRIP_RIGHT_,
     # "center_object_on_screen": center_object_on_screen,
-    # "grab_and_read_item": grab_and_read_item,
+    "grab_and_read_item": grab_and_read_item,
     "rotate_and_read": rotate_and_read,   
 }
 
@@ -129,27 +132,49 @@ image_path = "screenshots/ClientScreenshot.png"
 goal = input("Enter your goal: ")
 goal_tag = f"<goal>{goal}</goal>"
 step_count = 0
+item_grabbed = False
+centered = False
 
 while step_count < LOOP_LIMIT:
     ClientSide.RequestScreenshot()
+
     step_count += 1
     print(f"\n===== STEP {step_count} =====")
 
     # --- LOCAL VISION via endpoint ---
     try:
-        with open(image_path, "rb") as image_file:
-            files = {"file": image_file}
-            vision_payload = {
-                "prompt": (
-                    f"You are the vision component. Goal: {goal_tag}\n"
-                    f"Previous captions: {retrieve_block(agent_state, 'vision')}"
-                )
-            }
-            cap_res = requests.post(CAPTION_ENDPOINT, data=vision_payload, files=files)
-            cap_res.raise_for_status()
-            caption = cap_res.json()["response"]
+        # with open(image_path, "rb") as image_file:
+        # if not centered:
+        #     centered, max_steps, bounding_box = center_object_on_screen(goal)
+        centered = True
+        # update_block(agent_state, "bounding_box", bounding_box)
+        image_url = upload_image(image_path)
+        print("Uploaded image to server")
+        # example: when h_normalized == 0.5, true distance == 1.0 unit
+        PIXEL_HEIGHT_TO_M = 1.0 / 0.5  
+
+        # compute approximate “meters away”
+        # dist_estimate = PIXEL_HEIGHT_TO_M * (1.0 / (bounding_box["y_max"] - bounding_box["y_min"]))
+        # update_block(agent_state, "distance", dist_estimate)
+        # print("Distance:", dist_estimate)
+        
+        # talk to vision payload
+        vision_payload = {
+            "prompt": (
+                f"You are the vision component. Goal: {goal_tag}\n"
+                f"Previous captions: {retrieve_block(agent_state, 'vision')}\n"
+                # f"BoundingBox: {retrieve_block(agent_state, 'bounding_box')}\n"
+                f"Distance: {retrieve_block(agent_state, 'distance')}\n"
+            ),
+            "image_url": image_url
+        }
+        # cap_res = requests.post(CAPTION_ENDPOINT, data=vision_payload, files=files)
+        cap_res = requests.post(CAPTION_ENDPOINT, data=vision_payload)
+        cap_res.raise_for_status()
+        caption = cap_res.json()["response"]
         update_block(agent_state, "vision", caption)
         print("VISION CAPTION:", caption)
+
     except RequestException as e:
         print("Error in external caption endpoint:", e)
         continue
@@ -159,7 +184,10 @@ while step_count < LOOP_LIMIT:
         plan_payload = {
             "goal": goal_tag,
             "caption": caption,
-            "previous_plans": retrieve_block(agent_state, 'plan')
+            "previous_plans": retrieve_block(agent_state, 'plan'),
+            "centered": centered,
+            # "distance": dist_estimate,
+            "item_grabbed": item_grabbed
         }
         plan_res = requests.post(PLAN_ENDPOINT, data=plan_payload)
         plan_res.raise_for_status()
@@ -168,11 +196,19 @@ while step_count < LOOP_LIMIT:
         print("PLANNED STEPS:", plan)
     except RequestException as e:
         print("Error in external planning endpoint:", e)
+        import traceback; traceback.print_exc()
         continue
 
     # --- LOCAL DECISION via endpoint ---
     try:
-        decision_payload = {"plan": plan, "previous_actions": retrieve_block(agent_state, 'decision')}
+        decision_payload = {
+            "plan": plan,
+            "previous_actions": retrieve_block(agent_state, 'decision'),
+            "centered": centered,
+            # "distance": dist_estimate,
+            "item_grabbed": item_grabbed,
+        }
+        print("Item grabbed: ", item_grabbed)
         dec_res = requests.post(DECISION_ENDPOINT, data=decision_payload)
         dec_res.raise_for_status()
         decision_struct = dec_res.json()
@@ -190,13 +226,21 @@ while step_count < LOOP_LIMIT:
                 action_func = ACTION_MAP.get(action_name)
                 if action_func:
                     print(f"Executing: {action_name}")
-                    action_func(**args)
+                    result = action_func(**args)
+                    if (
+                        action_name == "toggle_left_grip"
+                        or action_name == "toggle_right_grip"
+                    ):
+                        item_grabbed = result
+                    print("Action result: ", result)
+
                 else:
                     print(f"Unknown action: {action_name}")
             except json.JSONDecodeError as e:
                 print("Error parsing decision JSON:", e)
     except RequestException as e:
         print("Error in external decision endpoint:", e)
+        import traceback; traceback.print_exc()
         continue
 
     # --- LETTA AGENT for integrated reasoning ---
