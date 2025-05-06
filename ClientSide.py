@@ -152,67 +152,99 @@ _REQUEST_JSON_ = lambda: RequestJson()
 
 # High-level actions
 def move_forward(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _MOVE_FWD_()
 
 def move_backward(units):
-    for _ in range(units):
-        _MOVE_BACK_()
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
+        _MOVE_BCK_()
 
 def move_left(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _MOVE_LEFT_()
 
 def move_right(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _MOVE_RIGHT_()
 
 def pan_left(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PAN_LEFT_()
 
 def pan_right(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PAN_RIGHT_()
 
 def pan_up(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PAN_UP_()
 
 def pan_down(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PAN_DOWN_()
 
 def extend_left_hand_forward(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _XTNFWD_LEFT_()
 
 def extend_right_hand_forward(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _XTNFWD_RIGHT_()
 
 def pull_left_hand_backward(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PLLBCK_LEFT_()
 
 def pull_right_hand_backward(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _PLLBCK_RIGHT_()
 
 def raise_left_hand(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _RSE_LEFT_()
 
 def raise_right_hand(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _RSE_RIGHT_()
 
 def lower_left_hand(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _LWR_LEFT_()
 
 def lower_right_hand(units):
-    for _ in range(units):
+    if units > 10:
+        print("Units greater than allowance. Setting units to 10.")
+    for _ in range(min(units, 10)):
         _LWR_RIGHT_()
 
 
